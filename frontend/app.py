@@ -93,6 +93,48 @@ with tab2:
 
     st.divider()
     
+    # --- CORRECTED: This section has been restored ---
+    st.subheader("Find a Customer")
+    search_method = st.radio("Search by:", ("ID", "Full Name"), horizontal=True, key="search_method")
+
+    if search_method == "ID":
+        search_id = st.number_input("Enter Customer ID", min_value=1, step=1, key="search_id_input")
+        if st.button("Search by ID"):
+            try:
+                with st.spinner(f"Searching for customer with ID {search_id}..."):
+                    response = requests.get(f"{BACKEND_URL}/customers/{search_id}")
+                    if response.status_code == 200:
+                        customer = response.json()
+                        st.success("Customer found!")
+                        st.json(customer)
+                    else:
+                        st.warning(f"No customer found with ID {search_id}.")
+            except requests.exceptions.RequestException:
+                st.error("Failed to communicate with the backend.")
+
+    elif search_method == "Full Name":
+        search_name = st.text_input("Enter Full Name (or part of it)", key="search_name_input")
+        if st.button("Search by Name"):
+            if search_name:
+                try:
+                    with st.spinner(f"Searching for customers named '{search_name}'..."):
+                        response = requests.get(f"{BACKEND_URL}/customers/")
+                        response.raise_for_status()
+                        customers = response.json()
+                        results = [c for c in customers if search_name.lower() in c['full_name'].lower()]
+                        
+                        if results:
+                            st.success(f"Found {len(results)} matching customer(s).")
+                            st.dataframe(pd.DataFrame(results), use_container_width=True)
+                        else:
+                            st.warning(f"No customers found matching '{search_name}'.")
+                except requests.exceptions.RequestException:
+                    st.error("Failed to communicate with the backend.")
+            else:
+                st.warning("Please enter a name to search.")
+
+    st.divider()
+
     st.subheader("Update Customer Details")
     update_id = st.number_input("Enter Customer ID to Edit", min_value=1, step=1, key="update_id_input")
 
@@ -134,6 +176,20 @@ with tab2:
                         st.session_state.customer_to_edit = None
                 except requests.exceptions.RequestException as e:
                     st.error(f"Error updating customer: {e.response.json().get('detail', 'Unknown error')}")
+
+    st.divider()
+    st.subheader("Current Customer List")
+    try:
+        response = requests.get(f"{BACKEND_URL}/customers/")
+        response.raise_for_status()
+        customers = response.json()
+        if customers:
+            df = pd.DataFrame(customers)
+            st.dataframe(df[['id', 'full_name', 'email', 'phone_number', 'address']], use_container_width=True)
+        else:
+            st.info("No customers found in the database yet.")
+    except requests.exceptions.RequestException:
+        st.error("Could not fetch customer list from the backend.")
 
 # --- Tab 3: View Quotation History ---
 with tab3:
@@ -226,11 +282,10 @@ with tab4:
     st.divider()
     st.subheader("Current User List")
     
-    # CORRECTED: This section now dynamically fetches the user list from the new endpoint.
     st.write("Enter your admin credentials to view the full list of users.")
     with st.form("view_users_form"):
-        view_admin_user = st.text_input("Your Admin Username")
-        view_admin_pass = st.text_input("Your Admin Password", type="password")
+        view_admin_user = st.text_input("Your Admin Username", key="view_user_admin_name")
+        view_admin_pass = st.text_input("Your Admin Password", type="password", key="view_user_admin_pass")
         view_users_button = st.form_submit_button("View All Users")
         
     if view_users_button:
@@ -246,3 +301,4 @@ with tab4:
                 st.error(f"Failed to fetch users: {e.response.json().get('detail', 'Access denied or invalid credentials.')}")
         else:
             st.warning("Please provide admin credentials to view the user list.")
+
