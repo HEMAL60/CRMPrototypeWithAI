@@ -1,39 +1,56 @@
-version: '3.8'
+# This is the definitive docker-compose file for the project.
+# It uses a corrected volume mount for the backend service to ensure
+# the training script is available and the trained model is persisted.
 
-# This top-level key groups all the container definitions.
+networks:
+  reliant_network:
+    driver: bridge
+
 services:
-  
-  # The PostgreSQL Database Service
-  # 'db' is indented by 2 spaces to show it's part of 'services'.
+  # 1. Database Service
   db:
-    image: postgres:13-alpine
+    image: postgres:13
     container_name: reliant_db
-    environment:
-      POSTGRES_USER: reliant_user
-      POSTGRES_PASSWORD: reliant_password
-      POSTGRES_DB: reliant_windows_db
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
       - ./db_init:/docker-entrypoint-initdb.d
-    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=erp_crm_db
+    ports:
+      - "5432:5432"
+    networks:
+      - reliant_network
 
-  # The FastAPI Backend Service
-  # 'backend' is also indented by 2 spaces, at the same level as 'db'.
+  # 2. Backend Service
   backend:
     build: ./backend
     container_name: reliant_backend
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
+      # Mount the entire backend directory.
+      # This makes train_model.py available inside the container and
+      # ensures the ml_model.joblib file is saved to your computer.
       - ./backend:/app
     ports:
       - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql://reliant_user:reliant_password@db/reliant_windows_db
     depends_on:
       - db
-    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://myuser:mypassword@db/erp_crm_db
+    networks:
+      - reliant_network
+
+  # 3. Frontend Service
+  frontend:
+    build: ./frontend
+    container_name: reliant_frontend
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+    networks:
+      - reliant_network
 
 volumes:
   postgres_data:

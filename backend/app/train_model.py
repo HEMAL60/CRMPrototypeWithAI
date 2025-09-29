@@ -1,75 +1,47 @@
-"""
-One-off script to train the quotation prediction model.
-
-This script connects to the database, fetches all historical quotation items,
-trains a simple linear regression model, and saves the trained model
-and the feature columns to a file for the main application to use.
-"""
-import os
 import pandas as pd
-import joblib
 from sqlalchemy import create_engine
-from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
+# CORRECTED: Import a more robust model
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.metrics import r2_score
+import joblib
+import os
 
 # --- Database Connection ---
-# Read the database URL from the same environment variable as the main app
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://myuser:mypassword@db/erp_crm_db")
 engine = create_engine(DATABASE_URL)
 
 print("Connecting to the database...")
 
-# --- Data Loading ---
-# A SQL query to get all the data needed for training.
-# We join quotation_items with products to get the categorical features.
-query = """
-SELECT
-    qi.width,
-    qi.height,
-    qi.quantity,
-    p.product_type,
-    p.material,
-    qi.price AS target_price -- This is the value we want to predict
-FROM
-    quotation_items qi
-JOIN
-    products p ON qi.product_id = p.id;
-"""
+# --- Data Loading and Preparation ---
+items_df = pd.read_sql("SELECT * FROM quotation_items", engine)
+products_df = pd.read_sql("SELECT id, product_type, material FROM products", engine)
 
-df = pd.read_sql(query, engine)
+df = pd.merge(items_df, products_df, left_on='product_id', right_on='id', how='left')
 print(f"Successfully loaded {len(df)} records from the database.")
 
 # --- Feature Engineering ---
-# Convert categorical variables into dummy/indicator variables (one-hot encoding).
-# This is a crucial step for the linear regression model.
-features = pd.get_dummies(df, columns=['product_type', 'material'], drop_first=True)
+df_encoded = pd.get_dummies(df, columns=['product_type', 'material'])
 
-# Separate our features (X) from the target variable (y)
-X = features.drop('target_price', axis=1)
-y = features['target_price']
+y = df_encoded['price']
+X = df_encoded.drop(columns=['price', 'id_x', 'id_y', 'quotation_id', 'product_id'], errors='ignore')
 
 # --- Model Training ---
-print("Training the Linear Regression model...")
-# Split data for a simple validation (optional but good practice)
+print("Training the Gradient Boosting Regressor model...")
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-model = LinearRegression()
+# CORRECTED: Use the more powerful GradientBoostingRegressor model.
+# This model is much less likely to produce negative predictions on this type of data.
+model = GradientBoostingRegressor(random_state=42)
 model.fit(X_train, y_train)
 
-# Evaluate the model on the test set
-score = model.score(X_test, y_test)
+# --- Model Evaluation ---
+y_pred = model.predict(X_test)
+score = r2_score(y_test, y_pred)
 print(f"Model training complete. R-squared score on test data: {score:.2f}")
 
-# --- Model Saving ---
-# It's critical to save not just the model, but also the columns it was trained on.
-# This ensures we can recreate the exact same feature set during prediction.
-model_data = {
-    'model': model,
-    'columns': X_train.columns.tolist()
-}
+# --- Save the Model ---
+joblib.dump((model, X_train.columns), 'app/ml_model.joblib')
+print(f"Model and feature columns saved to app/ml_model.joblib")
 
-# The model will be saved inside the 'app' directory so the main API can access it.
-model_path = "app/ml_model.joblib"
-joblib.dump(model_data, model_path)
 
-print(f"Model and feature columns saved to {model_path}")
