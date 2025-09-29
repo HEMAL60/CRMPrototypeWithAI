@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+SQLAlchemy
+psycopg2-binary
+pydantic
+pydantic-settings
+
+# Pinning passlib and bcrypt to known compatible versions to resolve dependency conflicts.
+passlib==1.7.4
+bcrypt==3.2.0
