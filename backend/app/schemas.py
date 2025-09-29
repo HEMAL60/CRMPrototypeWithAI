@@ -1,43 +1,50 @@
+"""
+Pydantic models for API data validation.
+Defines the shape of data for requests and responses.
+"""
 from typing import List, Optional
 from pydantic import BaseModel
-from enum import Enum as PyEnum
+import enum
 
-# --- THIS IS THE UPDATED ENUM with all new roles ---
-class UserRole(str, PyEnum):
-    MANAGER = "Manager"
-    REGIONAL_MANAGER = "Regional Manager"
-    SALES = "Sales"
-    CONSTRUCTION_WORKER = "Construction Worker"
-    HUMAN_RESOURCES_HEAD = "Human Resources Head"
-    HUMAN_RESOURCES_ASSOCIATE = "Human Resources Associate"
+# --- User Role Enum ---
+class UserRole(enum.Enum):
+    Manager = "Manager"
+    Regional_Manager = "Regional Manager"
+    Sales = "Sales"
+    Construction_Worker = "Construction Worker"
+    Human_Resources_Head = "Human Resources Head"
+    Human_Resources_Associate = "Human Resources Associate"
 
-# --- Base Schemas ---
+# --- Customer Schemas ---
 class CustomerBase(BaseModel):
     full_name: str
     email: Optional[str] = None
     phone_number: Optional[str] = None
     address: Optional[str] = None
 
-class QuotationItemBase(BaseModel):
-    product_id: int
-    width: float
-    height: float
-    quantity: int = 1
-
-# --- Schemas for Creating Records ---
 class CustomerCreate(CustomerBase):
     pass
 
-class QuotationCreate(BaseModel):
-    customer_id: int
-    user_id: int
-    items: List[QuotationItemBase]
+class CustomerUpdate(BaseModel):
+    full_name: Optional[str] = None
+    email: Optional[str] = None
+    phone_number: Optional[str] = None
+    address: Optional[str] = None
 
-# --- Schemas for Reading Records (API Responses) ---
 class Customer(CustomerBase):
     id: int
     class Config:
         from_attributes = True
+
+# --- Quotation Schemas ---
+class QuotationItemBase(BaseModel):
+    product_id: int
+    width: float
+    height: float
+    quantity: int
+
+class QuotationItemCreate(QuotationItemBase):
+    pass
 
 class QuotationItem(QuotationItemBase):
     id: int
@@ -45,17 +52,28 @@ class QuotationItem(QuotationItemBase):
     class Config:
         from_attributes = True
 
-class Quotation(BaseModel):
-    id: int
+class QuotationBase(BaseModel):
     customer_id: int
     user_id: int
+
+class QuotationCreate(QuotationBase):
+    items: List[QuotationItemCreate]
+
+class Quotation(QuotationBase):
+    id: int
     total_price: Optional[float] = None
     status: str
     items: List[QuotationItem] = []
     class Config:
         from_attributes = True
 
-# --- Schemas for User Management ---
+# --- User Schemas ---
+class UserRoleUpdate(BaseModel):
+    admin_username: str
+    admin_password: str
+    target_user_id: int
+    new_role: UserRole
+
 class User(BaseModel):
     id: int
     username: str
@@ -63,16 +81,29 @@ class User(BaseModel):
     class Config:
         from_attributes = True
 
-class UserRoleUpdate(BaseModel):
-    admin_username: str
-    admin_password: str
-    target_user_id: int
-    new_role: UserRole
-
-# --- Schema for Debugging ---
-class UserDebug(BaseModel):
-    username: str
+# --- Debugging Schema ---
+class UserDebug(User):
     hashed_password: str
-    class Config:
-        from_attributes = True
+
+# --- AI Feature Schemas ---
+# Enums to ensure the input for prediction matches the training data categories.
+# These must match the values in the `products` table.
+class ProductType(str, enum.Enum):
+    Window = "Window"
+    Door = "Door"
+
+class Material(str, enum.Enum):
+    uPVC = "uPVC"
+    Aluminium = "Aluminium"
+    Timber = "Timber"
+
+class QuotePredictionRequest(BaseModel):
+    width: float
+    height: float
+    quantity: int
+    product_type: ProductType
+    material: Material
+
+class QuotePredictionResponse(BaseModel):
+    predicted_price: float
 
