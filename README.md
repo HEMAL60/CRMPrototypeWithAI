@@ -54,7 +54,7 @@ The application is built using a modern, decoupled three-tier architecture. Each
 * **Database (PostgreSQL)**: A powerful, open-source relational database for all data persistence.
 
 ### Database Schema
-![Database Schema Diagram](https://drive.google.com/file/d/1mYxKgdb2rebRK9Qjgm7btVzZAM7dXG4i/view?usp=sharing)
+![Database Schema Diagram](https://drive.google.com/file/d/1mYxKgdb2rebRK9Qjgm7btVzZAM7dXG4i)
 
 ### Tools, Libraries, and Platforms
 
