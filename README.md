@@ -52,6 +52,31 @@ The application is built using a modern, decoupled three-tier architecture. Each
 
 ---
 
+## 🧠 AI Model Training & Rationale
+
+The core AI component is the Quotation Price Predictor. Its purpose is to provide salespeople with a quick, consistent, and data-driven price estimate when building a new quote, reducing guesswork and improving pricing standardization.
+
+### Model Algorithm
+
+The system uses a `GradientBoostingRegressor` model from the Scikit-learn library.
+
+This model was chosen over a simpler Linear Regression for two key reasons:
+
+* **Handles Complexity**: A `GradientBoostingRegressor` is a powerful ensemble model, meaning it combines the predictions of many simple "decision tree" models to produce a final, highly accurate prediction. This allows it to capture complex, non-linear relationships in the data (e.g., how the price impact of a material might change with the size of the product), which a simple straight-line model cannot.
+* **Prevents Negative Predictions**: When trained on a dataset of exclusively positive prices, this model is naturally resistant to making unrealistic negative price predictions, which can be a common issue with simple linear models.
+
+### Training Process
+
+The `train_model.py` script automates the complete machine learning workflow:
+
+1.  **Data Extraction**: It connects to the application's live PostgreSQL database and loads all historical quotation item data, along with their corresponding product features (type and material), into a Pandas DataFrame.
+2.  **Feature Engineering**: It uses one-hot encoding to convert categorical features (like `product_type` and `material`) into a numerical format that the model can understand. This process creates a wide table with binary flags for each category (e.g., `material_uPVC`, `material_Aluminium`).
+3.  **Model Training**: The script splits the data into a training set and a testing set. It then trains the `GradientBoostingRegressor` model on the training data.
+4.  **Evaluation**: After training, the model's performance is evaluated on the unseen test data, and its R-squared score is printed to the console.
+5.  **Serialization**: Finally, it saves the trained model object and the exact list of feature columns to a single `ml_model.joblib` file. Saving the columns is a critical step to ensure that data is processed in the exact same way during prediction (inference) as it was during training.
+
+---
+
 ## 🚀 How to Run the Solution Locally
 
 ### Prerequisites
@@ -95,7 +120,7 @@ To test the Role-Based Access Control features, use the following pre-seeded use
 
 ---
 
-## 🧠 Optional: Retraining the AI Model
+## 🤖 Optional: Retraining the AI Model
 
 If you add more data and wish to retrain the model, follow these steps while the main application is running.
 
