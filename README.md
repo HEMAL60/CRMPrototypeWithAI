@@ -14,16 +14,16 @@ The entire application is orchestrated with **Docker Compose**, ensuring a simpl
 ## 📸 Application Preview
 
 ### AI-Powered Price Predictor
-![AI Price Predictor UI](https://drive.google.com/file/d/1m5EdK57bbmm1rk-gR9Si2ngQi6w5xlMP/view?usp=sharing)
+<p align="center"><img src="https://github.com/HEMAL60/CRMPrototypeWithAI/blob/master/screenshots/webappss1.png?raw=true" alt="AI Price Predictor UI" width="700" /></p>
 
 ### Customer Management (CRM)
-![Customer Management UI](https://drive.google.com/file/d/1tL413Bj8vqmiPk3I_sPTOFM_f4SeuxSJ/view?usp=sharing)
+<p align="center"><img src="https://github.com/HEMAL60/CRMPrototypeWithAI/blob/master/screenshots/webappss2.png?raw=true" alt="Customer Management UI" width="700" /></p>
 
 ### Quotation History (ERP)
-![Quotation History UI](https://drive.google.com/file/d/1sCnXV_nxs0Vdi7EhgtIwOKImWWmh-YyS/view?usp=sharing)
+<p align="center"><img src="https://github.com/HEMAL60/CRMPrototypeWithAI/blob/master/screenshots/weappss3.png?raw=true" alt="Quotation History UI" width="700" /></p>
 
 ### User Management & RBAC
-![User Management UI](https://drive.google.com/file/d/1BrBq86Q5gSbUC5JwmFmIJ5PNR9wOnMgY/view?usp=sharing)
+<p align="center"><img src="https://github.com/HEMAL60/CRMPrototypeWithAI/blob/master/screenshots/webappss4.png?raw=true" alt="User Management UI" width="700" /></p>
 
 ---
 
@@ -54,7 +54,7 @@ The application is built using a modern, decoupled three-tier architecture. Each
 * **Database (PostgreSQL)**: A powerful, open-source relational database for all data persistence.
 
 ### Database Schema
-![Database Schema Diagram](https://drive.google.com/file/d/1mYxKgdb2rebRK9Qjgm7btVzZAM7dXG4i)
+<p align="center"><img src="https://github.com/HEMAL60/CRMPrototypeWithAI/blob/master/screenshots/dbSchema.pgerd.png?raw=true" alt="Database Schema Diagram" width="700" /></p>
 
 ### Tools, Libraries, and Platforms
 
