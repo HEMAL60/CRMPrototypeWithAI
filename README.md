@@ -11,6 +11,22 @@ The entire application is orchestrated with **Docker Compose**, ensuring a simpl
 
 ---
 
+## 📸 Application Preview
+
+### AI-Powered Price Predictor
+![AI Price Predictor UI](https://drive.google.com/file/d/1m5EdK57bbmm1rk-gR9Si2ngQi6w5xlMP/view?usp=sharing)
+
+### Customer Management (CRM)
+![Customer Management UI](https://drive.google.com/file/d/1tL413Bj8vqmiPk3I_sPTOFM_f4SeuxSJ/view?usp=sharing)
+
+### Quotation History (ERP)
+![Quotation History UI](https://drive.google.com/file/d/1sCnXV_nxs0Vdi7EhgtIwOKImWWmh-YyS/view?usp=sharing)
+
+### User Management & RBAC
+![User Management UI](https://drive.google.com/file/d/1BrBq86Q5gSbUC5JwmFmIJ5PNR9wOnMgY/view?usp=sharing)
+
+---
+
 ## 🎯 Core Features
 
 This prototype successfully delivers on all key requirements outlined in the project brief.
@@ -37,18 +53,21 @@ The application is built using a modern, decoupled three-tier architecture. Each
 * **Backend (FastAPI)**: A high-performance REST API that handles all business logic, database interactions, and serves AI model predictions.
 * **Database (PostgreSQL)**: A powerful, open-source relational database for all data persistence.
 
+### Database Schema
+![Database Schema Diagram](https://drive.google.com/file/d/1mYxKgdb2rebRK9Qjgm7btVzZAM7dXG4i/view?usp=sharing)
+
 ### Tools, Libraries, and Platforms
 
-| Category      | Technology                   | Reason for Choice                                                                                   |
-| :------------ | :--------------------------- | :-------------------------------------------------------------------------------------------------- |
-| **Backend** | `FastAPI`, `Uvicorn`         | High performance, modern asynchronous capabilities, and automatic interactive API documentation.    |
-|               | `SQLAlchemy`                 | The industry-standard ORM for Python, providing a robust and secure way to interact with the database. |
-|               | `Pydantic`                   | Enforces strict data validation and settings management, ensuring a reliable API data contract.       |
-| **Frontend** | `Streamlit`                  | Enables rapid development of a clean, data-focused UI entirely in Python, perfect for a prototype.    |
-|               | `Requests`, `Pandas`         | For seamless communication with the backend API and efficient data manipulation for display.        |
-| **Database** | `PostgreSQL`                 | A production-grade, open-source relational database known for its reliability and rich feature set.   |
-| **AI/ML** | `Scikit-learn`, `Pandas`     | The go-to libraries for machine learning in Python, providing powerful tools for data processing and modeling. |
-| **Platform** | `Docker`, `Docker Compose`   | For containerizing the application, ensuring a consistent, portable, and easy-to-run environment.   |
+| Category   | Technology                 | Reason for Choice                                                                            |
+| :--------- | :------------------------- | :------------------------------------------------------------------------------------------- |
+| **Backend** | `FastAPI`, `Uvicorn`       | High performance, modern asynchronous capabilities, and automatic interactive API documentation. |
+|            | `SQLAlchemy`               | The industry-standard ORM for Python, providing a robust and secure way to interact with the database. |
+|            | `Pydantic`                 | Enforces strict data validation and settings management, ensuring a reliable API data contract. |
+| **Frontend** | `Streamlit`                | Enables rapid development of a clean, data-focused UI entirely in Python, perfect for a prototype. |
+|            | `Requests`, `Pandas`       | For seamless communication with the backend API and efficient data manipulation for display. |
+| **Database** | `PostgreSQL`               | A production-grade, open-source relational database known for its reliability and rich feature set. |
+| **AI/ML** | `Scikit-learn`, `Pandas`   | The go-to libraries for machine learning in Python, providing powerful tools for data processing and modeling. |
+| **Platform** | `Docker`, `Docker Compose` | For containerizing the application, ensuring a consistent, portable, and easy-to-run environment. |
 
 ---
 
@@ -102,8 +121,8 @@ The `train_model.py` script automates the complete machine learning workflow:
 
 3.  **Access the Application**:
     Once the containers are running, the application is ready!
-    * **🌐 Frontend Web App**: Open your browser to **[http://localhost:8501](http://localhost:8501)**
-    * **⚙️ Backend API Docs**: Explore the API endpoints at **[http://localhost:8000/docs](http://localhost:8000/docs)**
+    * **🌐 Frontend Web App**: Open your browser to **http://localhost:8501**
+    * **⚙️ Backend API Docs**: Explore the API endpoints at **http://localhost:8000/docs**
 
 > **Note**: The AI Price Predictor feature works out-of-the-box, as a pre-trained model (`ml_model.joblib`) is included in the repository.
 
